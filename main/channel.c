@@ -4066,9 +4066,7 @@ static struct ast_frame *__ast_read(struct ast_channel *chan, int dropaudio, int
 				ast_channel_dtmf_digit_to_emulate_set(chan, 0);
 			}
 
-			if (dropaudio || ast_test_flag(ast_channel_flags(chan), AST_FLAG_IN_DTMF)) {
-				if (dropaudio)
-					ast_read_generator_actions(chan, f);
+			if (ast_test_flag(ast_channel_flags(chan), AST_FLAG_IN_DTMF)) {
 				ast_frfree(f);
 				f = &ast_null_frame;
 			}
@@ -4180,6 +4178,12 @@ static struct ast_frame *__ast_read(struct ast_channel *chan, int dropaudio, int
 				if (old_frame != f) {
 					ast_frfree(old_frame);
 				}
+			}
+
+			if (dropaudio) {
+				ast_read_generator_actions(chan, f);
+				ast_frfree(f);
+				f = &ast_null_frame;				
 			}
 
 			/*
